@@ -109,17 +109,20 @@ begin
     fetch dolgCurs into currDnev, currFiz;
     exit when dolgCurs%notfound;
 
+    currFiz := currFiz + 10000*length(REGEXP_REPLACE(currDnev, '[^aeiouAEIOU]'));
+    dbms_output.put_line('Dnev: '||currDnev||', uj fizetes: '|| currFiz);
+
     update dolg2
     set fizetes = fizetes
-                + 10000*length(REGEXP_REPLACE(currDnev, '[^aeiou]'))
+                + 10000*length(REGEXP_REPLACE(currDnev, '[^aeiouAEIOU]'))
     where current of dolgCurs;
   end loop;
   close dolgCurs;
+  ROLLBACK;
 end;
 /
 set serveroutput on
 call fiz_mod(10);
--- select * from dolg2 where oazon = 10;
 
 
 /* (exception)
