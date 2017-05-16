@@ -36,13 +36,13 @@ nevét és belépési dátumát, akik a felhasználó által megadott osztályon
 A felhasználó az osztály nevének első betűjét adja meg (ACCEPT-tel kérjük be).
 A program írja ki az osztály nevét is. Ha nincs megfelelő osztály, akkor azt írja ki.
 */
-ACCEPT oazon_begin CHAR FORMAT '9' PROMPT 'Adja meg az osztály azonosító első betűjét:';
+ACCEPT onev_begin CHAR PROMPT 'Adja meg az osztály nevének az első betűjét:';
 declare
   oazon_in oszt2.oazon%type := null;
   osztNev  oszt2.onev%type;
 begin
   select oazon into oazon_in from oszt2
-  where oazon LIKE &oazon_begin||'%';
+  where upper(onev) LIKE upper('&onev_begin%');
 
   select onev into osztNev from oszt2 where oazon = oazon_in;
   dbms_output.put_line('Talált osztály: '||osztNev||'.');
@@ -115,17 +115,20 @@ begin
     fetch dolgCurs into currDnev, currFiz;
     exit when dolgCurs%notfound;
 
+    currFiz := currFiz + 10000*length(REGEXP_REPLACE(currDnev, '[^aeiouAEIOU]'));
+    dbms_output.put_line('Dnev: '||currDnev||', uj fizetes: '|| currFiz);
+
     update dolg2
     set fizetes = fizetes
-                + 10000*length(REGEXP_REPLACE(currDnev, '[^aeiou]'))
+                + 10000*length(REGEXP_REPLACE(currDnev, '[^aeiouAEIOU]'))
     where current of dolgCurs;
   end loop;
   close dolgCurs;
+  ROLLBACK;
 end;
 /
 set serveroutput on
 call fiz_mod(10);
--- select * from dolg2 where oazon = 10;
 
 
 /* (exception)
