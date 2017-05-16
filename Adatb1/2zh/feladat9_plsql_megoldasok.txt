@@ -1,3 +1,9 @@
+/* (cursor és asszociatív tömb használata)
+Írjunk meg egy plsql procedúrát, amelyik veszi a dolgozókat ábácé szerinti sorrendben, 
+és minden páratlan sorszámú dolgozó nevét és fizetését beleteszi egy asszociatív tömbbe. 
+A procedúra a végén írja ki a tömb utolsó elõtti sorát.
+*/
+
 CREATE OR REPLACE
 PROCEDURE proc9 IS
   TYPE Map_Dnev_To_Fiz IS
