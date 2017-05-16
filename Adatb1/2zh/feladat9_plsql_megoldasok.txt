@@ -30,13 +30,13 @@ nevét és belépési dátumát, akik a felhasználó által megadott osztályon
 A felhasználó az osztály nevének első betűjét adja meg (ACCEPT-tel kérjük be).
 A program írja ki az osztály nevét is. Ha nincs megfelelő osztály, akkor azt írja ki.
 */
-ACCEPT oazon_begin CHAR FORMAT '9' PROMPT 'Adja meg az osztály azonosító első betűjét:';
+ACCEPT onev_begin CHAR PROMPT 'Adja meg az osztály nevének az első betűjét:';
 declare
   oazon_in oszt2.oazon%type := null;
   osztNev  oszt2.onev%type;
 begin
   select oazon into oazon_in from oszt2
-  where oazon LIKE &oazon_begin||'%';
+  where upper(onev) LIKE upper('&onev_begin%');
 
   select onev into osztNev from oszt2 where oazon = oazon_in;
   dbms_output.put_line('Talált osztály: '||osztNev||'.');
