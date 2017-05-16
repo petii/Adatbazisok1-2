@@ -1,5 +1,7 @@
 set serveroutput on
 
+/* Írjunk meg egy függvényt, amelyik eldönti egy számról, hogy prím-e. igen/nem -> 1/0 */
+
 CREATE OR REPLACE
 FUNCTION prim(n integer) RETURN number IS
   m integer := 2;
@@ -17,6 +19,9 @@ END;
 /
 SELECT prim(26388279066623) from dual;
 
+/* Írjunk meg egy procedúrát, amelyik kiírja az n-edik Fibonacchi számot 
+   fib_1 = 0, fib_2 = 1, fib_3 = 1, fib_4 = 2 ... fib_i = a megelõzõ kettõ összege
+*/
 
 CREATE OR REPLACE
 PROCEDURE fib(n integer) IS
@@ -35,6 +40,7 @@ end;
 set serveroutput on
 call fib(10);
 
+/* Írjunk meg egy függvényt, amelyik visszaadja két szám legnagyobb közös osztóját */
 
 CREATE OR REPLACE
 FUNCTION lnko(p1 integer, p2 integer) RETURN number IS
@@ -53,6 +59,7 @@ end;
 /
 SELECT lnko(3570,7293) FROM dual;
 
+/* Írjunk meg egy függvényt, amelyik visszaadja n faktoriálisát */
 
 CREATE OR REPLACE
 FUNCTION faktor(n integer) RETURN integer IS
@@ -66,6 +73,9 @@ end;
 /
 SELECT faktor(10) FROM dual;
 
+/* Írjunk meg egy függvényt, amelyik megadja, hogy hányszor fordul elõ egy 
+   karakterláncban -> p1 egy másik részkarakterlánc -> p2 
+*/
 
 CREATE OR REPLACE
 FUNCTION hanyszor(p1 VARCHAR2, p2 VARCHAR2) RETURN integer IS
@@ -75,16 +85,9 @@ end;
 /
 SELECT hanyszor ('ab c abb de ab fg', 'ab') FROM dual;
 
-
-CREATE OR REPLACE
-FUNCTION safe_to_number(numstr VARCHAR2) RETURN number IS
-begin
-  return to_number(numstr);
-exception when others then
-  return 0;
-end;
-/
-
+/* Írjunk meg egy függvényt, amelyik visszaadja a paraméterként szereplõ '+'-szal 
+   elválasztott számok összegét.
+*/
 
 CREATE OR REPLACE
 FUNCTION osszeg(inpstr VARCHAR2) RETURN number IS
@@ -109,6 +112,8 @@ exception
   return 0;
 end;
 /
+
+--teszt
 
 set serveroutput on
 SELECT osszeg('1 + 4 + 13 + 0') FROM dual;
