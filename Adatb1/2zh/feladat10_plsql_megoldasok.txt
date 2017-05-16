@@ -1,0 +1,63 @@
+/*
+Írjunk meg egy procedúrát, amelyik a NIKOVITS.VAGYONOK tábla alapján kiírja azoknak
+a személyeknek a nevét, akikre igaz, hogy van olyan leszármazottjuk, akinek nagyobb
+a vagyona, mint az illető vagyona.
+*/
+create or replace PROCEDURE GAZDAG_LESZARMAZOTT is 
+cursor valami is 
+  SELECT apja
+  FROM nikovits.vagyonok
+  WHERE CONNECT_BY_ROOT vagyon < vagyon
+  CONNECT BY  PRIOR nev = apja;
+ bonus   VARCHAR2(20);
+BEGIN
+    open valami;
+    loop
+    fetch valami into bonus; 
+    exit when valami%NOTFOUND;  
+  DBMS_OUTPUT.PUT_LINE('apa = ' ||bonus );
+  end loop;
+END;
+
+-----------------------------------------------------
+/*
+Írjunk meg egy procedúrát, amelyik a NIKOVITS.VAGYONOK tábla alapján kiírja azoknak
+a személyeknek a nevét, vagyonát, valamint leszármazottainak átlagos vagyonát, akikre igaz, 
+hogy a leszármazottainak átlagos vagyona nagyobb, mint az illető vagyona.
+A program tehát soronként 3 adatot ír ki: név, vagyon, leszármazottak átlagos vagyona
+*/
+--- két részből oldom meg a feladatot, előbb meg kell csinálni a functiont, és azt használjuk a procedure-ben
+
+CREATE OR REPLACE FUNCTION lesz_vagyon_avg ( alap_nev VARCHAR2 ) RETURN NUMBER IS
+    eredmeny NUMBER;
+BEGIN
+    SELECT AVG(vagyon) as atlag INTO eredmeny
+    FROM nikovits.vagyonok
+    WHERE LEVEL > 1
+    START WITH nev = alap_nev
+    CONNECT BY PRIOR nev = apja
+    GROUP BY CONNECT_BY_ROOT nev;
+    
+    RETURN eredmeny;
+END;
+
+CREATE OR REPLACE PROCEDURE gazdag_leszarmazottak IS
+
+cursor valami is
+    SELECT nev, vagyon, NVL(lesz_vagyon_avg(nev), 0) as leszarmazott
+    FROM nikovits.vagyonok;
+
+    sajt valami%ROWTYPE;
+BEGIN
+    
+    OPEN valami;
+    loop
+        fetch valami into sajt;
+        EXIT WHEN valami%NOTFOUND;
+        
+        IF sajt.vagyon < sajt.leszarmazott THEN
+            dbms_output.put_line(sajt.nev || ' - ' || sajt.vagyon || ' - ' || sajt.leszarmazott);
+        END IF;
+    end loop;
+END;
+
